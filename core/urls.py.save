@@ -1,0 +1,18 @@
+from django.contrib.auth import views as auth_views
+from django.urls import path
+from . import views
+from .views import StaffLoginView
+
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('agents/', views.agent_list, name='agent_list'),
+    path('stock/', views.stock_summary, name='stock_summary'),
+    path('sales/new/', views.add_sale, name='add_sale'),
+    path('login/', StaffLoginView.as_view(), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
+    path('assignments/', views.assignment_list, name='assignments'),
+    path('assignments/create/', views.create_assignment, name='create-assignment'),
+    path('assignments/<int:assignment_id>/reassign/', views.reassign_phone, name='reassign-assignment'),
+
+]
+

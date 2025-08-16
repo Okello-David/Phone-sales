@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load tz %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>📋 Phone Assignments</h2>
+    <a href="{% url 'create-assignment' %}" class="btn btn-primary">+ New Assignment</a>
+</div>
+
+{% if agent_assignments %}
+    {% for agent, assignments in agent_assignments.items %}
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <strong>{{ agent.full_name }}</strong>
+            </div>
+            <div class="card-body">
+                {% for assignment in assignments %}
+                    {% if assignment.previous_assignment %}
+                        <p class="text-muted">
+                            Reassigned from: {{ assignment.previous_assignment.agent.full_name }}
+                        </p>
+                    {% endif %}
+
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Brand</th>
+                                <th>Phone</th>
+                                <th>Quantity</th>
+                                <th>Date Assigned</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in assignment.phones.all %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ item.phone.brand }}</td>
+                                    <td>{{ item.phone.name }}</td>
+                                    <td>{{ item.quantity_given }}</td>
+                                    
+                                     {% localtime on %}
+                                        {{ assignment.date_assigned|date:"Y-m-d H:i:s" }}
+                                     {% endlocaltime %}
+
+                                    </td>
+                                </tr>
+                                
+                                </tr
+
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endfor %}
+
+                <!-- Buttons linked directly to this agent -->
+                <a href="{% url 'create-assignment' %}?agent_id={{ agent.id }}" class="btn btn-sm btn-info">➕ Add More Phones</a>
+                <a href="{% url 'reassign-assignment' assignments.0.id %}" class="btn btn-sm btn-warning">♻️ Reassign</a>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="alert alert-info">No assignments found.</div>
+{% endif %}
+{% endblock %}
+         
+                                
+                        
+                           
+ 

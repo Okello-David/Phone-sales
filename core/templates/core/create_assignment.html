@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">📦 Assign Phones to Agent</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <h5 class="mb-3">Assignment Details</h5>
+            {% for field in assignment_form %}
+                <div class="mb-3">
+                    <label class="form-label">{{ field.label_tag }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger small">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <hr>
+
+            <h5 class="mb-3">Phone Assignments</h5>
+            {{ phone_formset.management_form }}
+            {% for form in phone_formset %}
+                <div class="border p-3 mb-3">
+                    {% for field in form %}
+                        <div class="mb-2">
+                            <label class="form-label">{{ field.label_tag }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="text-danger small">{{ field.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" name="save_exit" class="btn btn-success">💾 Save & Exit</button>
+            <button type="submit" name="save_add" class="btn btn-primary">➕ Save & Add More Phones</button>
+
+            <a href="{% url 'assignments' %}" class="btn btn-secondary">Back</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

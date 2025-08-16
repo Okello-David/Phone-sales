@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <div class="card-header bg-warning text-white">
+        <h4 class="mb-0">♻️ Reassign Phones from {{ source_assignment.agent.full_name }}</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <h5>New Assignment Details</h5>
+            {% for field in assignment_form %}
+                <div class="mb-3">
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger small">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <hr>
+
+            <h5>Phones to Reassign</h5>
+            {% for form in phone_forms %}
+                <div class="border p-3 mb-3">
+                    {% for field in form %}
+                        <div class="mb-2">
+                            <label>{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="text-danger small">{{ field.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary">Reassign Selected Phones</button>
+            <a href="{% url 'assignments' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
