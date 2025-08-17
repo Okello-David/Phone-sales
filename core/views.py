@@ -14,14 +14,59 @@ from django.utils import timezone
 from django.db.models import Max
 
 
+# Simple form for editing one AssignedPhone
+def edit_assigned_phone(request, pk):
+    assigned_phone = get_object_or_404(AssignedPhone, pk=pk)
+    old_quantity = assigned_phone.quantity_given
+    old_phone = assigned_phone.phone
+
+    class AssignedPhoneForm(forms.ModelForm):
+        class Meta:
+            model = AssignedPhone
+            fields = ['phone', 'quantity_given']
+
+    if request.method == "POST":
+        form = AssignedPhoneForm(request.POST, instance=assigned_phone)
+        if form.is_valid():
+            with transaction.atomic():
+                updated_phone = form.cleaned_data['phone']
+                new_quantity = form.cleaned_data['quantity_given']
+
+                # Case 1: Same phone updated
+                if updated_phone == old_phone:
+                    difference = new_quantity - old_quantity
+                    if difference != 0:
+                        stock_entry, _ = Stock.objects.get_or_create(phone=updated_phone)
+                        stock_entry.balance -= difference  # reduce if added more, increase if reduced
+                        stock_entry.save()
+
+                # Case 2: Phone type changed
+                else:
+                    # return old quantity to old phone stock
+                    old_stock, _ = Stock.objects.get_or_create(phone=old_phone)
+                    old_stock.balance += old_quantity
+                    old_stock.save()
+
+                    # deduct new quantity from new phone stock
+                    new_stock, _ = Stock.objects.get_or_create(phone=updated_phone)
+                    new_stock.balance -= new_quantity
+                    new_stock.save()
+
+                form.save()
+                messages.success(request, "Assigned phone updated successfully.")
+                return redirect('assignments')
+    else:
+        form = AssignedPhoneForm(instance=assigned_phone)
+
+    return render(request, 'core/edit_assigned_phone.html', {'form': form, 'assigned_phone': assigned_phone})
+
 #delete function:
 def delete_assigned_phone(request, phone_id):
-    phone_assignment = get_object_or_404(AssignedPhone, id=phone_id)
-    agent_id = phone_assignment.assignment.agent.id  # Keep for redirect
-    phone_assignment.delete()
-    messages.success(request, "Phone assignment removed successfully.")
+    phone = get_object_or_404(AssignedPhone, id=phone_id)
+    agent_id = phone.assignment.agent.id  # keep for redirect later
+    phone.delete()
+    messages.success(request, f"Assigned phone deleted successfully.")
     return redirect('assignments')
-
 
 def assignments_view(request):
     grouped = defaultdict(list)
