@@ -14,6 +14,9 @@ urlpatterns = [
     path('assignments/create/', views.create_assignment, name='create-assignment'),
     path('assignments/', views.assignments_view, name='assignments'),
     path('assignments/<int:assignment_id>/reassign/', views.reassign_phone, name='reassign-assignment'),
-    path('assignments/phone/<int:phone_id>/delete/', views.delete_assigned_phone, name='delete-assigned-phone'),
+    path('assigned-phone/<int:pk>/edit/', views.edit_assigned_phone, name='edit-assigned-phone'),
+    path('assigned-phone/<int:assigned_phone_id>/delete/', views.delete_assigned_phone, name='delete-assigned-phone'),
+
+
 ]
 

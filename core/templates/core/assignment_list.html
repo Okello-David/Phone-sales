@@ -9,47 +9,12 @@
 
 {% if agent_assignments %}
     {% for agent, assignments in agent_assignments.items %}
-        <div class="card mb-4">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <strong>{{ agent.full_name }}</strong>
-            </div>
-            <div class="card-body">
-                {% for assignment in assignments %}
-                    {% if assignment.previous_assignment %}
-                        <p class="text-muted">
-                            Reassigned from: {{ assignment.previous_assignment.agent.full_name }}
-                        </p>
-                    {% endif %}
 
-                    <table class="table table-bordered table-sm">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Brand</th>
-                                <th>Phone</th>
-                                <th>Quantity</th>
-                                <th>Date Assigned</th>
+        <div class="card mb-4"> <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center"> <strong>{{ agent.full_name }}</strong> </div> <div class="card-body"> {% for assignment in assignments %} {% if assignment.previous_assignment %} <p class="text-muted"> Reassigned from: {{ assignment.previous_assignment.agent.full_name }} </p> {% endif %} <table class="table table-bordered table-sm"> <thead class="table-light"> <tr> <th>#</th> <th>Brand</th> <th>Phone</th> <th>Quantity</th> <th>Date Assigned</th> </tr> </thead> <tbody> {% for item in assignment.phones.all %} <tr> <td>{{ forloop.counter }}</td> <td>{{ item.phone.brand }}</td> <td>{{ item.phone.name }}</td> <td>{{ item.quantity_given }}</td> <td> {% localtime on %} {{ assignment.date_assigned|date:"Y-m-d H:i:s" }} {% endlocaltime %} </td> <td> <a href="{% url 'edit-assigned-phone' item.id %}" class="btn btn-sm btn-warning">✏️ Edit</a> <a href="{% url 'delete-assigned-phone' item.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this assigned phone?');"> 🗑 Delete </a>
+
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in assignment.phones.all %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ item.phone.brand }}</td>
-                                    <td>{{ item.phone.name }}</td>
-                                    <td>{{ item.quantity_given }}</td>
-                                    
-                                    <td>                                    
-                                     {% localtime on %}
-                                        {{ assignment.date_assigned|date:"Y-m-d H:i:s" }}
-                                     {% endlocaltime %}
-
-                                    </td>
-                                </tr>
-                                
-                                </tr
-
-                            {% endfor %}
+                        {% endfor %}
                         </tbody>
                     </table>
                 {% endfor %}
